@@ -5,6 +5,7 @@
 #include "indexableSet.h"
 
 void test() {
+    //IndexableSet ix;
     ASSERT_EQUAL(1, 1);
 }
 
