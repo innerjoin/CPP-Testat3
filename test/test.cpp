@@ -42,6 +42,30 @@ void testIndexableSetOverflowCapture() {
     ASSERT_THROWS(is2.at(-1), std::out_of_range);
 }
 
+void testIndexableSetCaselessCompare() {
+    struct caselessCompare {
+        bool operator ()(const std::string & left, const std::string & right) {
+            return std::lexicographical_compare(
+                    left.begin(), left.end(),
+                    right.begin(), right.end(),
+                    [](const char l, const char r){
+                return std::tolower(l) < std::tolower(r);
+            });
+        }
+    };
+
+    IndexableSet<std::string,caselessCompare> cl_is {"H", "i", "I", "h"};
+    ASSERT_EQUAL(2, cl_is.size());
+    ASSERT_EQUAL("H", cl_is[0]);
+    ASSERT_EQUAL("i", cl_is[1]);
+    IndexableSet<std::string> is {"H", "i", "I", "h"};
+    ASSERT_EQUAL(4, is.size());
+    ASSERT_EQUAL("H", is[0]);
+    ASSERT_EQUAL("I", is[1]);
+    ASSERT_EQUAL("h", is[2]);
+    ASSERT_EQUAL("i", is[3]);
+}
+
 void runAllTests(int argc, char const *argv[]){
     cute::suite s;
     s.push_back(CUTE(testIndexableSetAccess));
@@ -49,6 +73,7 @@ void runAllTests(int argc, char const *argv[]){
     s.push_back(CUTE(testIndexableSetFrontBack));
     s.push_back(CUTE(testIndexableSetNegativeIndexAccessFromBack));
     s.push_back(CUTE(testIndexableSetOverflowCapture));
+    s.push_back(CUTE(testIndexableSetCaselessCompare));
 
     cute::xml_file_opener xmlfile(argc,argv);
     cute::xml_listener<cute::ide_listener<> >  lis(xmlfile.out);

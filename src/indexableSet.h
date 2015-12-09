@@ -31,7 +31,7 @@ public:
         return *iterator;
     }
 
-    T const & operator[](size_type index) const {
+    T const & operator[](int index) const {
         return at(index);
     }
 };
