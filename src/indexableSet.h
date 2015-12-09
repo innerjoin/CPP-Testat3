@@ -7,7 +7,6 @@
 template <typename T, typename COMPARE=std::less<T>>
 class IndexableSet : public std::set<T, COMPARE> {
     using IdxSet = std::set<T, COMPARE>;
-    using size_type = typename IdxSet::size_type;
 
 public:
     using IdxSet::set;
@@ -21,14 +20,11 @@ public:
     }
 
     T const & at(int index) const {
-        size_t size = this->size();
-        //if(index >= size || -index > size)
-        if ((index >= 0 && index >= size) || (index < 0 && -index > size))
+        if(index < 0)
+            index = this->size() + index;
+        if(static_cast<unsigned>(index) >= this->size())
             throw std::out_of_range{"index out of range!!"};
-        size_t idx = index >= 0 ? index : this->size() + index;
-        auto iterator = this->begin();
-        std::advance(iterator, idx);
-        return *iterator;
+        return *std::next(this->begin(), index);
     }
 
     T const & operator[](int index) const {
