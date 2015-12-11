@@ -18,6 +18,15 @@ void testEmptyIndexableSet() {
     ASSERT(is.empty());
 }
 
+void testIndexableSetInsert(){
+    IndexableSet<int> is{};
+    ASSERT_EQUAL(0,is.size());
+    is.insert(42);
+    ASSERT_EQUAL(1,is.size());
+    ASSERT_EQUAL(42,is[0]);
+    ASSERT_THROWS(is[1],std::out_of_range);
+}
+
 void testIndexableSetFrontBack() {
     IndexableSet<int> is{88, -10, 23, 6};
     ASSERT_EQUAL(4, is.size());
@@ -66,14 +75,44 @@ void testIndexableSetCaselessCompare() {
     ASSERT_EQUAL("i", is[3]);
 }
 
+void testRangeConstructor(){
+    const std::string str{"glass"};
+    IndexableSet<char> is(str.begin(), str.end());
+    std::string t(is.begin(),is.end());
+    ASSERT_EQUAL(4, is.size());
+    ASSERT_EQUAL('a', is.at(0));
+    ASSERT_EQUAL('g', is.at(1));
+    ASSERT_EQUAL('l', is.at(2));
+    ASSERT_EQUAL('s', is.at(3));
+}
+
+void testCopyConstructor() {
+    const IndexableSet<std::string> constSet { "g", "l", "s", "s", "s" };
+    IndexableSet<std::string> set { constSet };
+    ASSERT_EQUAL(constSet.size(), set.size());
+    ASSERT_EQUAL(constSet.at(1), set.at(1));
+}
+
+void testMoveConstructor() {
+    IndexableSet<std::string> setToMove { "w", "h", "i", "t", "e" };
+    IndexableSet<std::string> set { std::move(setToMove) };
+    ASSERT(setToMove.empty());
+    ASSERT_EQUAL(0, setToMove.size());
+    ASSERT_EQUAL(5, set.size());
+}
+
 void runAllTests(int argc, char const *argv[]){
     cute::suite s;
     s.push_back(CUTE(testIndexableSetAccess));
     s.push_back(CUTE(testEmptyIndexableSet));
+    s.push_back(CUTE(testIndexableSetInsert));
     s.push_back(CUTE(testIndexableSetFrontBack));
     s.push_back(CUTE(testIndexableSetNegativeIndexAccessFromBack));
     s.push_back(CUTE(testIndexableSetOverflowCapture));
     s.push_back(CUTE(testIndexableSetCaselessCompare));
+    s.push_back(CUTE(testRangeConstructor));
+    s.push_back(CUTE(testCopyConstructor));
+    s.push_back(CUTE(testMoveConstructor));
 
     cute::xml_file_opener xmlfile(argc,argv);
     cute::xml_listener<cute::ide_listener<> >  lis(xmlfile.out);
