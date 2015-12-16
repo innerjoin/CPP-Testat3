@@ -16,12 +16,12 @@ public:
     }
 
     T const & back() const {
-        return at(this->size() - 1);
+        return at(-1);
     }
 
     T const & at(int index) const {
         if(index < 0)
-            index = this->size() + index;
+            index += this->size();
         if(static_cast<unsigned>(index) >= this->size())
             throw std::out_of_range{"index out of range!!"};
         return *std::next(this->begin(), index);
