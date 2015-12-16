@@ -96,8 +96,6 @@ void testCopyConstructor() {
 void testMoveConstructor() {
     IndexableSet<std::string> setToMove { "w", "h", "i", "t", "e" };
     IndexableSet<std::string> set { std::move(setToMove) };
-    ASSERT(setToMove.empty());
-    ASSERT_EQUAL(0, setToMove.size());
     ASSERT_EQUAL(5, set.size());
 }
 
